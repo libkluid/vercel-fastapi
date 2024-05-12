@@ -21,9 +21,30 @@ class UserRepository:
         except AuthApiError:
             raise errors.UnauthorizedException()
 
+    async def update_profile(self, user: User, user_profile: models.UserProfile) -> User:
+        await self.supabase.table("profiles").upsert({
+            "id": user.id,
+            "email": user.email,
+            "name": user_profile.name,
+        }).execute()
+
+        profile = await self.get_profile(user)
+        user.user_metadata = profile.model_dump()
+
+        return user
+
+    async def get_profile(self, user: User) -> models.UserProfile:
+        resp = await self.supabase.table("profiles").select("*").eq("id", user.id).single().execute()
+        return models.UserProfile(**resp.data)
+
     async def get_user(self, token: str) -> User:
         try:
             resp = await self.supabase.auth.get_user(token)
-            return resp.user
+            user_profile = await self.get_profile(resp.user)
+
+            user = resp.user
+            user.user_metadata = user_profile.model_dump()
+
+            return user
         except AuthApiError:
             raise errors.UnauthorizedException()
