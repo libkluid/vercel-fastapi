@@ -13,6 +13,12 @@ class AuthToken(BaseModel):
 class UserProfile(BaseModel):
     name: str
 
+class UserLog(BaseModel):
+    uid: str
+    email: str
+    action: str
+    data: dict | str | list | int | float | None
+
 __all__ = [
     "User",
     "SignIn",
