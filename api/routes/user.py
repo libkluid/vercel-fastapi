@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from api.entities import models
-from api.repositories import UserRepository
+from api.repositories import UserRepository, LogRepository
 from api.auth import verify_user
 
 
@@ -27,9 +27,12 @@ async def get_user(
 async def update_user(
     profile: models.UserProfile,
     user: Annotated[models.User, Depends(verify_user)],
-    user_repository: Annotated[UserRepository, Depends(UserRepository)]
+    user_repository: Annotated[UserRepository, Depends(UserRepository)],
+    log_repository: Annotated[LogRepository, Depends(LogRepository)]
 ):
     user = await user_repository.update_profile(user, profile)
+    log = await log_repository.create_update_profile_log(user, profile)
+
     return {
         "ok": True
     }

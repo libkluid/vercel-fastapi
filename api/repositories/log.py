@@ -20,3 +20,13 @@ class LogRepository:
         }).execute()
 
         return models.UserLog.model_validate(signin_logs.data[0])
+
+    async def create_update_profile_log(self, user: User, profile: models.UserProfile) -> models.UserLog:
+        update_profile_logs = await self.supabase.table("user_logs").insert({
+            "uid": user.id,
+            "email": user.email,
+            "action": "update_profile",
+            "data": profile.model_dump_json(),
+        }).execute()
+
+        return models.UserLog.model_validate(update_profile_logs.data[0])
