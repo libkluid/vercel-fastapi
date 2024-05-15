@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Union
 from datetime import datetime
 from gotrue import User
 from pydantic import BaseModel, Json
@@ -27,8 +27,8 @@ class License(BaseModel):
     id: int
     uid: str
     service: str
-    license_key: str | None
-    expires_at: datetime | None
+    license_key: Union[str, None]
+    expires_at: Union[datetime, None]
 
 class GrantUser(BaseModel):
     email: str
