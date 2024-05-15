@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from gotrue import AuthResponse
@@ -29,8 +29,10 @@ async def sign_in(
     if not license.license_key:
         await license_repository.update_license_key(user.id, license, data.service_key)
         await log_repository.create_license_registration(user, license, data.service_key)
-    elif license.license_key != data.service_key or license.expires_at < utcnow:
-            raise errors.UnauthorizedException()
+    elif license.license_key != data.service_key:
+        raise errors.UnauthorizedException()
+    elif license.expires_at is not None and license.expires_at < utcnow:
+        raise errors.UnauthorizedException()
 
     log = await log_repository.create_signin_log(user)
 

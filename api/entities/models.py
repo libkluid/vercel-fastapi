@@ -21,7 +21,7 @@ class UserLog(BaseModel):
     uid: str
     email: str
     action: str
-    data: Json[Any]
+    data: Union[Json[Any], None]
 
 class License(BaseModel):
     id: int
