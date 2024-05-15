@@ -26,7 +26,7 @@ class LogRepository:
             "uid": user.id,
             "email": user.email,
             "action": "update_profile",
-            "data": profile.model_dump_json(),
+            "data": profile.model_dump(),
         }).execute()
 
         return models.UserLog.model_validate(update_profile_logs.data[0])

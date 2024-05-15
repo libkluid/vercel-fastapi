@@ -18,22 +18,3 @@ async def get_user(
 ) -> models.UserProfile:
     profile = await user_repository.get_profile(user)
     return profile
-
-@router.patch(
-    path="",
-    summary="Update user profile",
-    description="Update user profile",
-)
-async def update_user(
-    profile: models.UserProfile,
-    user: Annotated[models.User, Depends(verify_user)],
-    user_repository: Annotated[UserRepository, Depends(UserRepository)],
-    log_repository: Annotated[LogRepository, Depends(LogRepository)]
-):
-    user = await user_repository.update_profile(user, profile)
-    log = await log_repository.create_update_profile_log(user, profile)
-
-    return {
-        "ok": True
-    }
-    
