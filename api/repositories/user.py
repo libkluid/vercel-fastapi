@@ -35,7 +35,7 @@ class UserRepository:
 
     async def get_profile(self, user: User) -> models.UserProfile:
         resp = await self.supabase.table("profiles").select("*").eq("id", user.id).single().execute()
-        return models.UserProfile(**resp.data)
+        return models.UserProfile.model_validate(resp.data)
 
     async def get_user(self, token: str) -> User:
         try:

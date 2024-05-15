@@ -5,6 +5,8 @@ from pydantic import BaseModel
 class SignIn(BaseModel):
     email: str
     password: str
+    service: str
+    service_key: str
 
 class AuthToken(BaseModel):
     token_type: str
@@ -13,7 +15,6 @@ class AuthToken(BaseModel):
 
 class UserProfile(BaseModel):
     name: str
-    valid_until: datetime | None
 
 class UserLog(BaseModel):
     uid: str
@@ -21,8 +22,17 @@ class UserLog(BaseModel):
     action: str
     data: dict | str | list | int | float | None
 
+class License(BaseModel):
+    id: int
+    uid: str
+    service: str
+    license_key: str
+    expires_at: datetime | None
+
 __all__ = [
     "User",
     "SignIn",
     "AuthToken",
+    "UserLog",
+    "License",
 ]

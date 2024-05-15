@@ -30,3 +30,16 @@ class LogRepository:
         }).execute()
 
         return models.UserLog.model_validate(update_profile_logs.data[0])
+
+    async def create_license_registration(self, user: User, license: models.License, license_key: str) -> models.UserLog:
+        license_registration_logs = await self.supabase.table("user_logs").insert({
+            "uid": user.id,
+            "email": user.email,
+            "action": "license_registration",
+            "data": {
+                "service": license.service,
+                "license_key": license_key,
+            },
+        }).execute()
+
+        return models.UserLog.model_validate(license_registration_logs.data[0])

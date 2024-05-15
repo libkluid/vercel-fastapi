@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from gotrue import AuthResponse
 from api.entities import models, errors
-from api.repositories import UserRepository, LogRepository
+from api.repositories import UserRepository, LogRepository, LicenseRepository
 from api.util import utcnow
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -15,13 +15,20 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def sign_in(
     data: models.SignIn,
     user_repository: Annotated[UserRepository, Depends(UserRepository)],
-    log_repository: Annotated[LogRepository, Depends(LogRepository)]
+    log_repository: Annotated[LogRepository, Depends(LogRepository)],
+    license_repository: Annotated[LicenseRepository, Depends(LicenseRepository)]
 ) -> models.AuthToken:
     resp: AuthResponse = await user_repository.sign_in(data)
 
     user: models.User = await user_repository.get_user(resp.session.access_token)
-    if valid_until := user.user_metadata.get("valid_until"):
-        if valid_until < utcnow():
+
+    license: models.License = await license_repository.find_license(user, data.service)
+    if not license:
+        raise errors.UnauthorizedException()
+    if not license.license_key:
+        await license_repository.update_license_key(user, license, data.service_key)
+        await log_repository.create_license_registration(user, license, data.service_key)
+    elif license.license_key != data.service_key or license.expires_at < utcnow():
             raise errors.UnauthorizedException()
 
     log = await log_repository.create_signin_log(user)
