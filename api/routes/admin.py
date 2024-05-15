@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends
 from gotrue import AuthResponse
 from api.entities import models, errors
 from api.repositories import UserRepository, LogRepository, LicenseRepository
-from api.util import utcnow
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
