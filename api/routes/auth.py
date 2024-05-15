@@ -22,11 +22,11 @@ async def sign_in(
 
     user: models.User = await user_repository.get_user(resp.session.access_token)
 
-    license: models.License = await license_repository.find_license(user, data.service)
+    license: models.License = await license_repository.find_license(user.id, data.service)
     if not license:
         raise errors.UnauthorizedException()
     if not license.license_key:
-        await license_repository.update_license_key(user, license, data.service_key)
+        await license_repository.update_license_key(user.id, license, data.service_key)
         await log_repository.create_license_registration(user, license, data.service_key)
     elif license.license_key != data.service_key or license.expires_at < utcnow():
             raise errors.UnauthorizedException()

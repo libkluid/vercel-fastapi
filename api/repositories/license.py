@@ -11,18 +11,24 @@ class LicenseRepository:
     def __init__(self, supabase: Annotated[Supabase, Depends(async_client)]):
         self.supabase = supabase
 
-    async def find_license(self, user: User, service: str) -> models.License | None:
-        resp = await self.supabase.table("user_licenses").select("*").eq("uid", user.id).eq("service", service).maybe_single().execute()
+    async def find_license(self, uid: str, service: str) -> models.License | None:
+        resp = await self.supabase.table("user_licenses").select("*").eq("uid", uid).eq("service", service).maybe_single().execute()
 
         if not resp:
             return None
 
         return models.License.model_validate(resp.data) 
+    
+    async def create_license(self, uid: str, service: str):
+        await self.supabase.table("user_licenses").insert({
+            "uid": uid,
+            "service": service,
+        }).execute()
 
-    async def update_license_key(self, user: User, license: models.License, license_key: str):
+    async def update_license_key(self, uid: str, license: models.License, license_key: str | None):
         await self.supabase.table("user_licenses").upsert({
             "id": license.id,
-            "uid": user.id,
+            "uid": uid,
             "service": license.service,
             "license_key": license_key,
         }).execute()

@@ -48,3 +48,10 @@ class UserRepository:
             return user
         except AuthApiError:
             raise errors.UnauthorizedException()
+
+    async def find_uid(self, email: str) -> str:
+        resp = await self.supabase.table("profiles").select("*").eq("email", email).single().execute()
+        if not resp:
+            raise errors.NotFoundException()
+
+        return resp.data["id"]
