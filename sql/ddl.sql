@@ -5,6 +5,7 @@ CREATE TABLE public.profiles (
   email TEXT NOT NULL,
   name TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  valid_until TIMESTAMP WITH TIME ZONE,
 
   PRIMARY KEY (id)
 );

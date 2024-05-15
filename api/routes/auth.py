@@ -1,8 +1,9 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from gotrue import AuthResponse
-from api.entities import models
+from api.entities import models, errors
 from api.repositories import UserRepository, LogRepository
+from api.util import utcnow
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -19,6 +20,10 @@ async def sign_in(
     resp: AuthResponse = await user_repository.sign_in(data)
 
     user: models.User = await user_repository.get_user(resp.session.access_token)
+    if valid_until := user.user_metadata.get("valid_until"):
+        if valid_until < utcnow():
+            raise errors.UnauthorizedException()
+
     log = await log_repository.create_signin_log(user)
 
     return models.AuthToken(**resp.session.model_dump())

@@ -1,3 +1,4 @@
+from datetime import datetime
 from gotrue import User
 from pydantic import BaseModel
 
@@ -12,6 +13,7 @@ class AuthToken(BaseModel):
 
 class UserProfile(BaseModel):
     name: str
+    valid_until: datetime | None
 
 class UserLog(BaseModel):
     uid: str
