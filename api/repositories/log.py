@@ -16,7 +16,6 @@ class LogRepository:
             "uid": user.id,
             "email": user.email,
             "action": "signin",
-            "data": None,
         }).execute()
 
         return models.UserLog.model_validate(signin_logs.data[0])
