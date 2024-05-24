@@ -1,8 +1,10 @@
+from typing import Union
+from datetime import datetime
 from pydantic import BaseModel
 
-class UserInfoResponse(BaseModel):
-    uid: str
-    email: str
+class UserProfileResponse(BaseModel):
     name: str
-    created_at: str
-    updated_at: str
+
+class UserLicenseResponse(BaseModel):
+    service: str
+    expires_at: Union[datetime, None]

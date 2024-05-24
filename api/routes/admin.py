@@ -15,16 +15,14 @@ async def grant_user(
     data: models.GrantUser,
     user_repository: Annotated[UserRepository, Depends(UserRepository)],
     license_repository: Annotated[LicenseRepository, Depends(LicenseRepository)]
-):
+) -> models.License:
     uid = await user_repository.find_uid(data.email)
 
     license = await license_repository.find_license(uid, data.service)
     if not license:
-        await license_repository.create_license(uid, data.service)
+        license = await license_repository.create_license(uid, data.service)
     else:
-        await license_repository.update_license_key(uid, license, None)
+        license = await license_repository.update_license_key(uid, license, None)
 
-    return {
-        "ok": True,
-    }
+    return license
 
