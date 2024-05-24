@@ -53,3 +53,11 @@ class LogRepository:
 
         result = license_registration_logs.data[0]
         return models.UserLog.model_validate(result)
+
+    async def insert_comment(self, user: User, name: str, comment: str):
+        await self.supabase.table("user_comments").insert({
+            "uid": user.id,
+            "email": user.email,
+            "name": name,
+            "comment": comment,
+        }).execute()

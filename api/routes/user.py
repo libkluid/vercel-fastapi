@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from api.entities import models, errors, response
-from api.repositories import UserRepository, LicenseRepository
+from api.repositories import UserRepository, LicenseRepository, LogRepository
 from api.auth import verify_user
 
 
@@ -33,3 +33,22 @@ async def get_user_services(
     if not license:
         raise errors.NotFoundException()
     return license 
+
+@router.post(
+    path="/services/{service}/comment",
+    summary="Makes a user comment",
+    description="Makes a user comment",
+)
+async def make_user_comment(
+    service: str,
+    data: models.Comment,
+    user: Annotated[models.User, Depends(verify_user)],
+    user_repository: Annotated[UserRepository, Depends(UserRepository)],
+    log_repository: Annotated[LogRepository, Depends(LogRepository)],
+):
+    profile = await user_repository.get_profile(user)
+    await log_repository.insert_comment(user, profile.name, data.text)
+
+    return {
+        "ok": True,
+    }

@@ -38,6 +38,14 @@ class GrantUser(BaseModel):
     email: str
     service: str
 
+class Comment(BaseModel):
+    text: str
+
+class UserComment(BaseModel):
+    user: User
+    comment: str
+    created_at: datetime
+
 __all__ = [
     "User",
     "SignIn",
@@ -45,4 +53,5 @@ __all__ = [
     "UserLog",
     "License",
     "GrantUser",
+    "UserComment",
 ]
