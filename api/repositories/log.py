@@ -1,3 +1,4 @@
+import json
 from fastapi import Depends
 from typing import Annotated
 from supabase import AClient as Supabase
@@ -41,4 +42,5 @@ class LogRepository:
             },
         }).execute()
 
-        return models.UserLog.model_validate(license_registration_logs.data[0])
+        result = license_registration_logs.data[0]
+        return models.UserLog.model_validate(result)

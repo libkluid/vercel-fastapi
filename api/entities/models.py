@@ -1,7 +1,7 @@
-from typing import Any, Union
+from typing import Union
 from datetime import datetime
 from gotrue import User
-from pydantic import BaseModel, Json
+from pydantic import BaseModel
 
 class SignIn(BaseModel):
     email: str
@@ -21,7 +21,7 @@ class UserLog(BaseModel):
     uid: str
     email: str
     action: str
-    data: Union[Json[Any], None]
+    data: Union[None, int, float, str, dict, list]
 
 class License(BaseModel):
     id: int
