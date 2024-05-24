@@ -21,6 +21,13 @@ class UserRepository:
         except AuthApiError:
             raise errors.UnauthorizedException()
 
+    async def refresh(self, refresh: models.Refresh) -> AuthResponse:
+        try:
+            resp = await self.supabase.auth.refresh_session(refresh.token)
+            return resp
+        except AuthApiError:
+            raise errors.UnauthorizedException()
+
     async def update_profile(self, user: User, user_profile: models.UserProfile) -> User:
         await self.supabase.table("profiles").upsert({
             "id": user.id,

@@ -9,6 +9,10 @@ class SignIn(BaseModel):
     service: str
     service_key: str
 
+class Refresh(BaseModel):
+    token: str
+    service: str
+
 class AuthToken(BaseModel):
     token_type: str
     access_token: str

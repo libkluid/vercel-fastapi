@@ -38,3 +38,26 @@ async def sign_in(
 
     return models.AuthToken(**resp.session.model_dump())
 
+
+@router.post(
+    path="/refresh",
+    summary="Refresh",
+    description="Refresh access token",
+)
+async def refresh(
+    data: models.Refresh,
+    user_repository: Annotated[UserRepository, Depends(UserRepository)],
+    license_repository: Annotated[LicenseRepository, Depends(LicenseRepository)]
+) -> models.AuthToken:
+    resp: AuthResponse = await user_repository.refresh(data)
+    user: models.User = await user_repository.get_user(resp.session.access_token)
+    license: models.License = await license_repository.find_license(user.id, data.service)
+
+    utcnow = datetime.datetime.now(datetime.timezone.utc)
+
+    if not license:
+        raise errors.UnauthorizedException()
+    elif license.expires_at is not None and license.expires_at < utcnow:
+        raise errors.UnauthorizedException()
+
+    return models.AuthToken(**resp.session.model_dump())
