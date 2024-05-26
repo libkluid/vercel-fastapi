@@ -1,5 +1,5 @@
 from typing import Union
-from datetime import datetime
+from datetime import date, datetime
 from gotrue import User
 from pydantic import BaseModel
 
@@ -38,6 +38,10 @@ class License(BaseModel):
 class GrantUser(BaseModel):
     email: str
     service: str
+
+class UpdateExpiration(BaseModel):
+    email: str
+    expires_at: Union[date]
 
 class Comment(BaseModel):
     text: str

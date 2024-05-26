@@ -1,6 +1,6 @@
 import datetime
 from fastapi import Depends
-from typing import Annotated
+from typing import Annotated, Union
 from supabase import AClient as Supabase
 from gotrue import User
 from api.saas.supabase import async_client
@@ -22,12 +22,12 @@ class LicenseRepository:
     
     async def create_license(self, uid: str, service: str):
         utcnow = datetime.datetime.now(datetime.timezone.utc)
-        nextweek = utcnow + datetime.timedelta(days=7)
+        next_week = utcnow + datetime.timedelta(days=7)
 
         result = await self.supabase.table("user_licenses").insert({
             "uid": uid,
             "service": service,
-            "expires_at": nextweek.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+            "expires_at": next_week.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
         }).execute()
 
         return models.License.model_validate(result.data[0])
@@ -39,5 +39,13 @@ class LicenseRepository:
             "service": license.service,
             "license_key": license_key,
         }).execute()
+
+        return models.License.model_validate(result.data[0])
+
+
+    async def update_license_expiration(self, uid: str, license: models.License, expires_at: datetime.date):
+        result = await self.supabase.table("user_licenses").update({
+            "expires_at": expires_at.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+        }).eq("id", license.id).execute()
 
         return models.License.model_validate(result.data[0])

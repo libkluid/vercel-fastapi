@@ -26,3 +26,22 @@ async def grant_user(
 
     return license
 
+@router.post(
+    path="/user/services/{service}/expiration",
+    summary="allow user to access service",
+    description="allow user to access service",
+)
+async def update_expiration(
+    service: str,
+    data: models.UpdateExpiration,
+    user_repository: Annotated[UserRepository, Depends(UserRepository)],
+    license_repository: Annotated[LicenseRepository, Depends(LicenseRepository)]
+) -> models.License:
+    uid = await user_repository.find_uid(data.email)
+    license = await license_repository.find_license(uid, service)
+    if not license:
+        raise errors.NotFoundException()
+    else:
+        license = await license_repository.update_license_expiration(uid, license, data.expires_at)
+
+    return license
