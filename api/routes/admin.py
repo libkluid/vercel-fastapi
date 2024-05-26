@@ -7,6 +7,20 @@ from api.repositories import UserRepository, LogRepository, LicenseRepository
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 @router.post(
+    path="/user/invite",
+    summary="allow user to access service",
+    description="allow user to access service",
+)
+async def invite_user(
+    data: models.InviteUser,
+    user_repository: Annotated[UserRepository, Depends(UserRepository)],
+):
+    await user_repository.invite_user(data.email)
+    return {
+        "ok": True,
+    }
+
+@router.post(
     path="/user/grant",
     summary="allow user to access service",
     description="allow user to access service",

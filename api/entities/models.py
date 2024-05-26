@@ -35,6 +35,9 @@ class License(BaseModel):
     monthly_comment_limit: int
     expires_at: Union[datetime, None]
 
+class InviteUser(BaseModel):
+    email: str
+
 class GrantUser(BaseModel):
     email: str
     service: str

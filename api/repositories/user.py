@@ -56,6 +56,9 @@ class UserRepository:
         except AuthApiError:
             raise errors.UnauthorizedException()
 
+    async def invite_user(self, email: str) -> None:
+        await self.supabase.auth.admin.invite_user_by_email(email)
+
     async def find_uid(self, email: str) -> str:
         resp = await self.supabase.table("profiles").select("*").eq("email", email).single().execute()
         if not resp:
