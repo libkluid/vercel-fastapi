@@ -32,6 +32,7 @@ class License(BaseModel):
     uid: str
     service: str
     license_key: Union[str, None]
+    monthly_comment_limit: int
     expires_at: Union[datetime, None]
 
 class GrantUser(BaseModel):

@@ -45,9 +45,15 @@ async def make_user_comment(
     user: Annotated[models.User, Depends(verify_user)],
     user_repository: Annotated[UserRepository, Depends(UserRepository)],
     log_repository: Annotated[LogRepository, Depends(LogRepository)],
+    license_repository: Annotated[LicenseRepository, Depends(LicenseRepository)]
 ):
     profile = await user_repository.get_profile(user)
-    await log_repository.insert_comment(user, profile.name, data.text)
+    comment_count = await log_repository.count_monthly_comments(user, service)
+    license: models.License = await license_repository.find_license(user.id, service)
+    if comment_count > license.monthly_comment_limit:
+        raise errors.TooManyRequestsException()
+
+    await log_repository.insert_comment(user, service, profile.name, data.text)
 
     return {
         "ok": True,

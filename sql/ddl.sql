@@ -55,3 +55,6 @@ CREATE TABLE public.user_comments (
   comment TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+ALTER TABLE public.user_comments ADD COLUMN service TEXT DEFAULT NULL;
+ALTER TABLE public.user_licenses ADD COLUMN monthly_comment_limit INT DEFAULT 300;
