@@ -35,25 +35,25 @@ async def get_user_services(
     return license 
 
 @router.post(
-    path="/services/{service}/comment",
-    summary="Makes a user comment",
-    description="Makes a user comment",
+    path="/services/{service}/action",
+    summary="Makes a user action",
+    description="Makes a user action",
 )
-async def make_user_comment(
+async def make_user_action(
     service: str,
-    data: models.Comment,
+    data: models.Action,
     user: Annotated[models.User, Depends(verify_user)],
     user_repository: Annotated[UserRepository, Depends(UserRepository)],
     log_repository: Annotated[LogRepository, Depends(LogRepository)],
     license_repository: Annotated[LicenseRepository, Depends(LicenseRepository)]
 ):
     profile = await user_repository.get_profile(user)
-    comment_count = await log_repository.count_monthly_comments(user, service)
+    action_count = await log_repository.count_monthly_actions(user, service)
     license: models.License = await license_repository.find_license(user.id, service)
-    if comment_count > license.monthly_comment_limit:
+    if action_count > license.monthly_action_limit:
         raise errors.TooManyRequestsException()
 
-    await log_repository.insert_comment(user, service, profile.name, data.text)
+    await log_repository.insert_action(user, service, profile.name, data.data)
 
     return {
         "ok": True,

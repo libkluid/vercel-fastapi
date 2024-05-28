@@ -1,6 +1,6 @@
 import datetime
 from fastapi import Depends
-from typing import Annotated, Union
+from typing import Annotated
 from supabase import AClient as Supabase
 from gotrue import User
 from api.saas.supabase import async_client
@@ -20,13 +20,14 @@ class LicenseRepository:
 
         return models.License.model_validate(resp.data) 
     
-    async def create_license(self, uid: str, service: str):
+    async def create_license(self, uid: str, email, service: str):
         utcnow = datetime.datetime.now(datetime.timezone.utc)
         next_week = utcnow + datetime.timedelta(days=7)
 
         result = await self.supabase.table("user_licenses").insert({
             "uid": uid,
             "service": service,
+            "email": email,
             "expires_at": next_week.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
         }).execute()
 

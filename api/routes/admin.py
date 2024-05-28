@@ -21,7 +21,7 @@ async def grant_user(
 
     license = await license_repository.find_license(uid, service)
     if not license:
-        license = await license_repository.create_license(uid, service)
+        license = await license_repository.create_license(uid, data.email, service)
     else:
         license = await license_repository.update_license_key(uid, license, None)
 

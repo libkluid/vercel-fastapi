@@ -58,3 +58,10 @@ CREATE TABLE public.user_comments (
 
 ALTER TABLE public.user_comments ADD COLUMN service TEXT DEFAULT NULL;
 ALTER TABLE public.user_licenses ADD COLUMN monthly_comment_limit INT DEFAULT 300;
+
+ALTER TABLE public.user_licenses ADD COLUMN email TEXT DEFAULT NULL;
+ALTER TABLE public.user_comments RENAME TO user_actions;
+ALTER TABLE public.user_actions DROP COLUMN comment;
+ALTER TABLE public.user_actions ADD COLUMN data JSON;
+
+ALTER TABLE public.user_licenses RENAME COLUMN monthly_comment_limit TO monthly_action_limit;

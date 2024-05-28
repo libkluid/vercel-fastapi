@@ -1,4 +1,5 @@
 import datetime
+from typing import Union
 from fastapi import Depends
 from typing import Annotated
 from supabase import AClient as Supabase
@@ -54,18 +55,18 @@ class LogRepository:
         result = license_registration_logs.data[0]
         return models.UserLog.model_validate(result)
 
-    async def insert_comment(self, user: User, service: str, name: str, comment: str):
-        await self.supabase.table("user_comments").insert({
+    async def insert_action(self, user: User, service: str, name: str, action: Union[None, int, float, str, dict, list]):
+        await self.supabase.table("user_actions").insert({
             "uid": user.id,
             "service": service,
             "email": user.email,
             "name": name,
-            "comment": comment,
+            "data": action,
         }).execute()
 
-    async def count_monthly_comments(self, user: User, service: str):
+    async def count_monthly_actions(self, user: User, service: str):
         now = datetime.datetime.now()
         last_month = now - datetime.timedelta(days=30)
         last_month = last_month.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-        comments = await self.supabase.table("user_comments").select("id").eq("uid", user.id).eq("service", service).gte("created_at", last_month).execute()
-        return len(comments.data)
+        result = await self.supabase.table("user_actions").select("id").eq("uid", user.id).eq("service", service).gte("created_at", last_month).execute()
+        return len(result.data)
