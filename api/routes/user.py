@@ -50,6 +50,8 @@ async def make_user_action(
     profile = await user_repository.get_profile(user)
     action_count = await log_repository.count_monthly_actions(user, service)
     license: models.License = await license_repository.find_license(user.id, service)
+    if not license:
+        raise errors.UnauthorizedException()
     if action_count > license.monthly_action_limit:
         raise errors.TooManyRequestsException()
 
