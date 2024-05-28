@@ -38,6 +38,19 @@ async def sign_in(
 
     return models.AuthToken(**resp.session.model_dump())
 
+@router.post(
+    path="/signup",
+    summary="sign up",
+    description="sign up",
+)
+async def sign_up(
+    data: models.SignUp,
+    user_repository: Annotated[UserRepository, Depends(UserRepository)],
+):
+    await user_repository.sign_up(data.email, data.password)
+    return {
+        "ok": True,
+    }
 
 @router.post(
     path="/refresh",
