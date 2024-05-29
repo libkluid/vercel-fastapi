@@ -18,7 +18,7 @@ class UserRepository:
                 credentials=signin.model_dump()
             )
             return resp
-        except AuthApiError:
+        except AuthApiError as e:
             raise errors.UnauthorizedException()
 
     async def refresh(self, refresh: models.Refresh) -> AuthResponse:
@@ -59,7 +59,7 @@ class UserRepository:
     async def sign_up(self, email: str, password: str) -> None:
         await self.supabase.auth.sign_up({
             "email": email,
-            "password": "password",
+            "password": password,
         })
 
     async def find_uid(self, email: str) -> str:
